@@ -1,4 +1,4 @@
-package com.example.githubuserapp
+package com.example.githubuserapp.ui.main
 
 import android.app.SearchManager
 import android.content.Context
@@ -8,12 +8,20 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.githubuserapp.BuildConfig
+import com.example.githubuserapp.R
 import com.example.githubuserapp.databinding.ActivityMainBinding
+import com.example.githubuserapp.databinding.ActivityThemeBinding
+import com.example.githubuserapp.ui.favorite.FavoriteActivity
+import com.example.githubuserapp.ui.setting.*
 import com.loopj.android.http.AsyncHttpClient
 import com.loopj.android.http.AsyncHttpResponseHandler
 import cz.msebera.android.httpclient.Header
@@ -22,15 +30,34 @@ import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var bindingSetting: ActivityThemeBinding
     private var listUser: ArrayList<User> = ArrayList()
-    private val token: String = "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"
+    private var distinctUser: LinkedHashSet<User> = LinkedHashSet()
+    private val token = BuildConfig.KEY
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTheme(R.style.Theme_GithubUserApp)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.rvUsers.setHasFixedSize(true)
 
+        bindingSetting = ActivityThemeBinding.inflate(layoutInflater)
+        val pref = SettingPreferences.getInstance(dataStore)
+        val settingViewModel = ViewModelProvider(this, SettingViewModelFactory(pref)).get(
+            SettingViewModel::class.java
+        )
+        settingViewModel.getThemeSettings().observe(this
+        ) { isDarkModeActive: Boolean ->
+            if (isDarkModeActive) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        }
         getUser()
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -91,7 +118,23 @@ class MainActivity : AppCompatActivity() {
                 return false
             }
         })
+
         return true
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_setting -> {
+                val intent = Intent(this@MainActivity, ThemeActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.action_favorite -> {
+                val intent = Intent(this@MainActivity, FavoriteActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            else -> true
+        }
     }
     private fun getUser() {
         binding.progressBar.visibility = View.VISIBLE
@@ -143,6 +186,7 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, result)
                 try {
                     val jsonObject = JSONObject(result)
+                    val uid: Int = jsonObject.getString("id").toInt()
                     val name: String? = jsonObject.getString("name").toString()
                     val username: String? = jsonObject.getString("login").toString()
                     val followers: String? = jsonObject.getString("followers").toString()
@@ -151,18 +195,18 @@ class MainActivity : AppCompatActivity() {
                     val company: String? = jsonObject.getString("company").toString()
                     val location: String? = jsonObject.getString("location").toString()
                     val repository: String? = jsonObject.getString("public_repos").toString()
-                    listUser.add(
-                        User(
-                            name,
-                            username,
-                            photo,
-                            followers,
-                            following,
-                            company,
-                            location,
-                            repository,
-                        )
-                    )
+                    listUser.add(User(
+                        uid,
+                        name,
+                        username,
+                        photo,
+                        followers,
+                        following,
+                        company,
+                        location,
+                        repository,
+                    ))
+                    distinctUser.addAll(listUser)
                     showRecyclerList()
                 } catch (e: Exception) {
                     Toast.makeText(this@MainActivity, e.message, Toast.LENGTH_SHORT).show()
@@ -183,14 +227,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showRecyclerList() {
+        listUser.clear()
+        listUser.addAll(distinctUser)
+        distinctUser.clear()
         if (applicationContext.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             binding.rvUsers.layoutManager = GridLayoutManager(this, 2)
         } else {
             binding.rvUsers.layoutManager = LinearLayoutManager(this)
         }
         val listUserAdapter = ListUserAdapter(listUser)
-        binding.rvUsers.adapter = listUserAdapter
 
+        binding.rvUsers.adapter = listUserAdapter
         listUserAdapter.setOnItemClickCallback(object : ListUserAdapter.OnItemClickCallback {
             override fun onItemClicked(data: User) {
                 val moveWithObjectIntent = Intent(this@MainActivity, DetailActivity::class.java)

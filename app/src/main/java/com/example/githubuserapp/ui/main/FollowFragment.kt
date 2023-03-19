@@ -1,5 +1,6 @@
-package com.example.githubuserapp
+package com.example.githubuserapp.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.githubuserapp.BuildConfig
 import com.example.githubuserapp.databinding.FragmentFollowBinding
 import com.loopj.android.http.AsyncHttpClient
 import com.loopj.android.http.AsyncHttpResponseHandler
@@ -21,7 +23,7 @@ class FollowFragment : Fragment() {
 
     private lateinit var adapter: ListUserAdapter
     private var listUser: ArrayList<User> = ArrayList()
-    private val token: String = "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"
+    private val token = BuildConfig.KEY
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -98,6 +100,7 @@ class FollowFragment : Fragment() {
                 Log.d(TAG, result)
                 try {
                     val jsonObject = JSONObject(result)
+                    val id: Int = jsonObject.getString("id").toInt()
                     val username: String? = jsonObject.getString("login").toString()
                     val name: String? = jsonObject.getString("name").toString()
                     val photo: String? = jsonObject.getString("avatar_url").toString()
@@ -108,6 +111,7 @@ class FollowFragment : Fragment() {
                     val repository: String? = jsonObject.getString("public_repos").toString()
                     listUser.add(
                         User(
+                            id,
                             name,
                             username,
                             photo,
@@ -142,6 +146,14 @@ class FollowFragment : Fragment() {
         binding.rvFollow.layoutManager = LinearLayoutManager(activity)
         val listUserAdapter = ListUserAdapter(listUser)
         binding.rvFollow.adapter = listUserAdapter
+
+        listUserAdapter.setOnItemClickCallback(object : ListUserAdapter.OnItemClickCallback {
+            override fun onItemClicked(data: User) {
+                val moveWithObjectIntent = Intent(activity, DetailActivity::class.java)
+                moveWithObjectIntent.putExtra(DetailActivity.EXTRA_PERSON, data)
+                startActivity(moveWithObjectIntent)
+            }
+        })
     }
 
     companion object {
