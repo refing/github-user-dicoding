@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
 //    private lateinit var bindingSetting: ActivityThemeBinding
     private var listUser: ArrayList<User> = ArrayList()
     private var distinctUser: LinkedHashSet<User> = LinkedHashSet()
-    private val token = BuildConfig.KEY
     private lateinit var homeViewModel: HomeViewModel
 
 
