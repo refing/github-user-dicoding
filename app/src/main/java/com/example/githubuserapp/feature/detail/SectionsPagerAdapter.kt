@@ -1,4 +1,4 @@
-package com.example.githubuserapp.core.ui
+package com.example.githubuserapp.feature.detail
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

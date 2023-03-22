@@ -29,14 +29,15 @@ class RemoteDataSource private constructor(private val apiService: ApiService) {
         val arraytemp = ArrayList<UserResponse>()
         //get data from remote api
         val client = apiService.getUsers(token)
-
         client.enqueue(object : Callback<List<preUserResponse>> {
             override fun onResponse(
                 call: Call<List<preUserResponse>>,
                 response: Response<List<preUserResponse>>
             ) {
                 val dataArray = response.body()
+
                 if (dataArray != null) {
+                    Log.e("debugrefi listsize",dataArray.size.toString())
                     for (item in dataArray){
                         val client2 = apiService.getUserDetail(token,item.login)
                         client2.enqueue(object : Callback<UserResponse> {

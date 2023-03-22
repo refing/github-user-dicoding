@@ -13,36 +13,40 @@ import com.example.githubuserapp.core.domain.model.User
 //import com.example.githubuserapp.core.ui.SectionsPagerAdapter
 import com.example.githubuserapp.databinding.ActivityDetailBinding
 import com.example.githubuserapp.core.ui.ViewModelFactory
+import com.example.githubuserapp.feature.main.HomeViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
-//class DetailActivity : AppCompatActivity() {
-//    private lateinit var binding: ActivityDetailBinding
-//    private var buttonState: Boolean = false
-//    private var userEntityUser: UserEntity? = null
+class DetailActivity : AppCompatActivity() {
+    companion object {
+        const val EXTRA_DATA = "extra_data"
+    }
+
+    private lateinit var binding: ActivityDetailBinding
+    private lateinit var detailViewModel: DetailViewModel
 //    private lateinit var userDetailViewModel: FavoriteAddViewModel
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        binding = ActivityDetailBinding.inflate(layoutInflater)
-//        setContentView(binding.root)
-//
-//        userDetailViewModel = obtainViewModel(this@DetailActivity)
-//
-//        val user = intent.getParcelableExtra<User>(EXTRA_PERSON) as User
-//        userEntityUser = UserEntity()
-//
-//        binding.tvFullname.text = user.name.toString()
-//        binding.tvUsername.text = user.username.toString()
-//        Glide.with(this)
-//            .load(user.photo)
-//            .circleCrop()
-//            .into(binding.imgPhoto)
-//        binding.tvFollowers.text = resources.getString(R.string.followers, user.followers, user.following)
-//        binding.tvCompany.text = resources.getString(R.string.company, user.company)
-//        binding.tvLocation.text = resources.getString(R.string.location, user.location)
-//        binding.tvRepository.text = resources.getString(R.string.repository, user.repository)
-//
-//        userDetailViewModel.getAllFavorites().observe(this) { favoriteList ->
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityDetailBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        val factory = ViewModelFactory.getInstance(this)
+        detailViewModel = ViewModelProvider(this, factory)[DetailViewModel::class.java]
+
+        val user = intent.getParcelableExtra<User>(EXTRA_DATA) as User
+
+        binding.tvFullname.text = user.name.toString()
+        binding.tvUsername.text = user.username.toString()
+        Glide.with(this)
+            .load(user.photo)
+            .circleCrop()
+            .into(binding.imgPhoto)
+        binding.tvFollowers.text = resources.getString(R.string.followers, user.followers, user.following)
+        binding.tvCompany.text = resources.getString(R.string.company, user.company)
+        binding.tvLocation.text = resources.getString(R.string.location, user.location)
+        binding.tvRepository.text = resources.getString(R.string.repository, user.repository)
+
+//        detailViewModel.getAllFavorites().observe(this) { favoriteList ->
 //            if (favoriteList != null) {
 //                for (data in favoriteList) {
 //                    if (user.username == data.username) {
@@ -96,18 +100,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 //        TabLayoutMediator(tabs, viewPager) { tab, position ->
 //            tab.text = resources.getString(TAB_TITLES[position])
 //        }.attach()
-//        supportActionBar?.elevation = 0f
-//    }
-//    private fun obtainViewModel(activity: AppCompatActivity): FavoriteAddViewModel {
-//        val factory = ViewModelFactory.getInstance(activity.application)
-//        return ViewModelProvider(activity, factory).get(FavoriteAddViewModel::class.java)
-//    }
-//    companion object {
-//        const val EXTRA_PERSON = "extra_person"
-//        @StringRes
-//        private val TAB_TITLES = intArrayOf(
-//            R.string.tab_text_1,
-//            R.string.tab_text_2
-//        )
-//    }
-//}
+        supportActionBar?.elevation = 0f
+    }
+
+}
