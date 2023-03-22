@@ -56,4 +56,44 @@ data class UserResponse(
 
     @field:SerializedName("site_admin")
     val site_admin: Boolean,
+
+    @field:SerializedName("name")
+    val name: String,
+
+    @field:SerializedName("company")
+    val company: String,
+
+    @field:SerializedName("blog")
+    val blog: String,
+
+    @field:SerializedName("location")
+    val location: String,
+
+    @field:SerializedName("email")
+    val email: String,
+
+    @field:SerializedName("hireable")
+    val hireable: String,
+
+    @field:SerializedName("twitter_username")
+    val twitter_username: String,
+
+    @field:SerializedName("public_repos")
+    val public_repos: String,
+
+    @field:SerializedName("public_gists")
+    val public_gists: String,
+
+    @field:SerializedName("followers")
+    val followers: String,
+
+    @field:SerializedName("following")
+    val following: String,
+
+    @field:SerializedName("created_at")
+    val created_at: String,
+
+    @field:SerializedName("updated_at")
+    val updated_at: String,
+
 )

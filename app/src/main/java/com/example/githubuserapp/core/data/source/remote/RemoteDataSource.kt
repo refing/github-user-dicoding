@@ -6,8 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import com.example.githubuserapp.BuildConfig
 import com.example.githubuserapp.core.data.source.remote.network.ApiResponse
 import com.example.githubuserapp.core.data.source.remote.network.ApiService
-import com.example.githubuserapp.core.data.source.remote.response.DetailUserResponse
 import com.example.githubuserapp.core.data.source.remote.response.UserResponse
+import com.example.githubuserapp.core.data.source.remote.response.preUserResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -25,50 +25,52 @@ class RemoteDataSource private constructor(private val apiService: ApiService) {
     }
 
     fun getAllUsers(): LiveData<ApiResponse<List<UserResponse>>> {
-        val resultData = MutableLiveData<ApiResponse<List<UserResponse>>>()
-
+        val resultDataListDetail = MutableLiveData<ApiResponse<List<UserResponse>>>()
+        val arraytemp = ArrayList<UserResponse>()
         //get data from remote api
         val client = apiService.getUsers(token)
 
-        client.enqueue(object : Callback<List<UserResponse>> {
+        client.enqueue(object : Callback<List<preUserResponse>> {
             override fun onResponse(
-                call: Call<List<UserResponse>>,
-                response: Response<List<UserResponse>>
+                call: Call<List<preUserResponse>>,
+                response: Response<List<preUserResponse>>
             ) {
                 val dataArray = response.body()
-                resultData.value = if (dataArray != null) ApiResponse.Success(dataArray) else ApiResponse.Empty
+                if (dataArray != null) {
+                    for (item in dataArray){
+                        val client2 = apiService.getUserDetail(token,item.login)
+                        client2.enqueue(object : Callback<UserResponse> {
+                            override fun onResponse(
+                                call: Call<UserResponse>,
+                                response: Response<UserResponse>
+                            ) {
+                                val dataArrayDetail = response.body()
+                                if (dataArrayDetail != null) {
+                                    arraytemp.add(dataArrayDetail)
+                                }
+                            }
+
+                            override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                                resultDataListDetail.value = ApiResponse.Error(t.message.toString())
+                                Log.e("RemoteDataSource", t.message.toString())
+                            }
+                        })
+                    }
+                    Log.e("debugrefi listtempapl",arraytemp.toString())
+                    Log.e("debugrefi size",arraytemp.size.toString())
+                    resultDataListDetail.value = ApiResponse.Success(arraytemp)
+                }else{
+                    resultDataListDetail.value = ApiResponse.Empty
+                }
             }
 
-            override fun onFailure(call: Call<List<UserResponse>>, t: Throwable) {
-                resultData.value = ApiResponse.Error(t.message.toString())
+            override fun onFailure(call: Call<List<preUserResponse>>, t: Throwable) {
+                resultDataListDetail.value = ApiResponse.Error(t.message.toString())
                 Log.e("RemoteDataSource", t.message.toString())
             }
         })
 
-        return resultData
+        return resultDataListDetail
     }
 
-//    fun getUserDetail(id:Int): LiveData<ApiResponse<DetailUserResponse>> {
-//        val resultData = MutableLiveData<ApiResponse<DetailUserResponse>>()
-//
-//        //get data from remote api
-//        val client = apiService.getUserDetail(id)
-//
-//        client.enqueue(object : Callback<DetailUserResponse> {
-//            override fun onResponse(
-//                call: Call<DetailUserResponse>,
-//                response: Response<DetailUserResponse>
-//            ) {
-//                val dataArray = response.body()
-//                resultData.value = if (dataArray != null) ApiResponse.Success(dataArray) else ApiResponse.Empty
-//            }
-//
-//            override fun onFailure(call: Call<DetailUserResponse>, t: Throwable) {
-//                resultData.value = ApiResponse.Error(t.message.toString())
-//                Log.e("RemoteDataSource", t.message.toString())
-//            }
-//        })
-//
-//        return resultData
-//    }
 }

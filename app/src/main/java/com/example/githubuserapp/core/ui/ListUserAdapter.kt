@@ -39,8 +39,9 @@ class ListUserAdapter : RecyclerView.Adapter<ListUserAdapter.ListViewHolder>() {
                 Glide.with(itemView.context)
                     .load(data.photo)
                     .into(imgItemPhoto)
-                tvItemUsername.text = data.username
                 tvItemName.text = data.name
+                tvItemUsername.text = data.username
+
             }
         }
 

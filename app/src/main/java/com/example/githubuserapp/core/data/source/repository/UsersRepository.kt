@@ -7,7 +7,6 @@ import com.example.githubuserapp.core.data.source.Resource
 import com.example.githubuserapp.core.data.source.local.LocalDataSource
 import com.example.githubuserapp.core.data.source.remote.RemoteDataSource
 import com.example.githubuserapp.core.data.source.remote.network.ApiResponse
-import com.example.githubuserapp.core.data.source.remote.response.DetailUserResponse
 import com.example.githubuserapp.core.data.source.remote.response.UserResponse
 import com.example.githubuserapp.core.domain.model.User
 import com.example.githubuserapp.core.domain.repository.InterfaceUsersRepository
@@ -53,34 +52,6 @@ class UsersRepository private constructor(
                 localDataSource.insertUsers(tourismList)
             }
         }.asLiveData()
-
-//    override fun getUserDetail(id:Int): LiveData<Resource<User>> =
-//        object : NetworkBoundResource<User, DetailUserResponse>(appExecutors) {
-//            override fun loadFromDB(): LiveData<User> {
-//                return Transformations.map(localDataSource.getUserByID(id)) {
-//                    DataMapper.mapEntitiesToDomain(it)
-//                    // get the one user from db
-//                }
-//            }
-//
-//            override fun shouldFetch(data: User?): Boolean =
-////                data == null || data.isEmpty()
-//                true // ganti dengan true jika ingin selalu mengambil data dari internet
-//
-//            override fun createCall(): LiveData<ApiResponse<DetailUserResponse>> =
-//                remoteDataSource.getUserDetail(id)
-//
-//            override fun saveCallResult(data: DetailUserResponse) {
-//                val tourismList = DataMapper.mapResponsesToEntities(data)
-//                localDataSource.insertUsers(tourismList)
-//                // update the data to local db
-//            }
-//        }.asLiveData()
-
-//    override fun setUserDetail(user: User) {
-//        val tourismEntity = DataMapper.mapDomainToEntity(user)
-//        appExecutors.diskIO().execute { localDataSource.setFavoriteUsers(tourismEntity) } //?
-//    }
 
     override fun getFavoriteUsers(): LiveData<List<User>> {
         return Transformations.map(localDataSource.getFavoriteUsers()) {

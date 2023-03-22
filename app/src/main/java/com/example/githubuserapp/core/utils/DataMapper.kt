@@ -1,7 +1,6 @@
 package com.example.githubuserapp.core.utils
 
 import com.example.githubuserapp.core.data.source.local.entity.UserEntity
-import com.example.githubuserapp.core.data.source.remote.response.DetailUserResponse
 import com.example.githubuserapp.core.data.source.remote.response.UserResponse
 import com.example.githubuserapp.core.domain.model.User
 
@@ -12,13 +11,13 @@ object DataMapper {
             val user = UserEntity(
                 id = it.id,
                 username = it.login,
-//                name = it.name,
-//                photo = it.photo,
-//                followers = it.followers,
-//                following = it.following,
-//                company = it.company,
-//                location = it.location,
-//                repository = it.repository,
+                name = it.name,
+                photo = it.avatar_url,
+                followers = it.followers,
+                following = it.following,
+                company = it.company,
+                location = it.location,
+                repository = it.public_repos,
                 isFavorite = false
             )
             userList.add(user)
@@ -31,13 +30,13 @@ object DataMapper {
             User(
                 id = it.id,
                 username = it.username,
-//                name = it.name,
-//                photo = it.photo,
-//                followers = it.followers,
-//                following = it.following,
-//                company = it.company,
-//                location = it.location,
-//                repository = it.repository,
+                name = it.name,
+                photo = it.photo,
+                followers = it.followers,
+                following = it.following,
+                company = it.company,
+                location = it.location,
+                repository = it.repository,
                 isFavorite = it.isFavorite
             )
         }
@@ -45,41 +44,13 @@ object DataMapper {
     fun mapDomainToEntity(input: User) = UserEntity(
         id = input.id,
         username = input.username,
-//                name = it.name,
-//                photo = it.photo,
-//                followers = it.followers,
-//                following = it.following,
-//                company = it.company,
-//                location = it.location,
-//                repository = it.repository,
+        name = input.name,
+        photo = input.photo,
+        followers = input.followers,
+        following = input.following,
+        company = input.company,
+        location = input.location,
+        repository = input.repository,
         isFavorite = input.isFavorite
     )
-//    fun mapResponsesToEntitiesDetail(input: DetailUserResponse): UserEntity {
-//        val user = UserEntity(
-//            id = it.id,
-//            username = it.login,
-//            name = it.name,
-//            photo = it.photo,
-//            followers = it.followers,
-//            following = it.following,
-//            company = it.company,
-//            location = it.location,
-//            repository = it.repository,
-//            isFavorite = false
-//        )
-//    }
-//
-//    fun mapEntitiesToDomainDetail(input: DetailUserResponse): User =
-//        User(
-//            id = it.id,
-//            username = it.username,
-//            name = it.name,
-//            photo = it.photo,
-//            followers = it.followers,
-//            following = it.following,
-//            company = it.company,
-//            location = it.location,
-//            repository = it.repository,
-//            isFavorite = it.isFavorite
-//        )
 }

@@ -9,8 +9,6 @@ class UsersInteractor(private val userRepository: InterfaceUsersRepository): Use
 
     override fun getAllUsers() = userRepository.getAllUsers()
 
-//    override fun getUserDetail(id:Int)= userRepository.getUserDetail(id)
-
     override fun getFavoriteUsers() = userRepository.getFavoriteUsers()
 
     override fun setFavoriteUsers(user: User, state: Boolean) = userRepository.setFavoriteUsers(user, state)
